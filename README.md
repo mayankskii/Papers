@@ -6,3 +6,5 @@ discretizing continuous data include Fayyad & Irani's MDL method, which uses mut
 Selection of the methods depend on the problem at hand.
 
 read http://infolab.stanford.edu/~ullman/mmds/ch1.pdf
+
+https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/
