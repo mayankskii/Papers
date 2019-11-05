@@ -1,0 +1,1275 @@
+<!DOCTYPE HTML>
+<!DOCTYPE html PUBLIC "" ""><HTML><HEAD><META content="IE=11.0000" 
+http-equiv="X-UA-Compatible">
+
+<META http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<META name="GENERATOR" content="MSHTML 11.00.10570.1001"></HEAD>
+<BODY>
+<PRE>libname Lib_EDD "O:\YRC070\Users\Sudipta96408\Liberty\Datasets\EDDDatasets";
+libname cv "O:\YRC070\Users\Sudipta96408\Liberty\Datasets\cv";
+libname mod "O:\YRC070\Users\Sudipta96408\Liberty\Datasets\ModelStats";
+libname sub 'O:\YRC070\Users\Sudipta96408\Liberty\Datasets\Subdata\SUBDATA1';
+libname mod1 "O:\YRC070\Users\Sudipta96408\Liberty\Datasets\Stats";
+libname mod2 "O:\YRC070\Users\Sudipta96408\Liberty\Datasets\Stats1";
+libname catlg "E:\MacroToolkit";
+
+/*Import Consolidated Submission Data */
+data sub.SubmissionDataupdated1;
+	       %let _EFIERR_ = 0; /* set the ERROR detection macro variable */
+	       infile 'O:\YRC070\Users\Sudipta96408\Liberty\Data\Final_Consolidated_Submission_v4.csv' delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=2 ;
+	          informat Submission_ID $50. ;
+/* 			  informat Received_Date mmddyy10. ;*/
+/*	          informat Inception_Date mmddyy10. ;*/
+/*		  	  informat DIFF_Incept_Rec 10. ;*/
+	          informat Type $20. ;
+	          informat Broker_Comp $100. ;
+			  informat Broker_Parent_Name $100. ;
+/*	          informat Broker_Name $100. ;*/
+	          informat Insured_Name $100. ;
+	          informat Risk_Location $100. ;
+	          informat Class_Code_Desc $50. ;
+			  informat Class_Code_Desc_NEW $50. ;
+ 			  informat location $50. ;
+			  informat terror $2. ;
+ 			  informat Prim_or_Xs $20. ;
+	          informat Num_of_Loc 10. ;
+			  informat CAT_Modeling $10. ;
+ 			  informat Old_Occupancy $80. ;
+			  informat Prim_Occupancy $60. ;
+/*	          informat Structure $100. ;*/
+/*	          informat Cover $100. ;*/
+			  informat Currency1 $20.;
+			  informat PD comma20.2 ;
+	          informat BI comma20.2 ;
+	          informat TIV comma20.2 ;
+	          informat Currency2 $20. ;
+	          informat Attach_Point comma20.2;
+	          informat Limits comma18.2;
+			  informat Deductibles comma20.2;
+			  informat Premium_Cur $10. ;
+	          informat Expected_Premium comma20.2 ;
+	          informat Loss_Period comma15.2 ;
+	          informat Loss_Period 10. ;
+			  informat Annual_Burn_Rate comma20.2 ;
+			  informat Quote best32.;
+
+	          format Submission_ID $50. ;
+/*			  format Received_Date mmddyy10. ;*/
+/*	          format Inception_Date mmddyy10. ;*/
+/*			  format DIFF_Incept_Rec 10. ;*/
+	          format Type $20. ;
+	          format Broker_Comp $100. ;
+			  format Broker_Parent_Name $100. ;
+/*	          format Broker_Name $100. ;*/
+	          format Insured_Name $100. ;
+	          format Risk_Location $100. ;
+	          format Class_Code_Desc $50. ;
+			  format Class_Code_Desc_NEW $50. ;
+			  format location $50. ;
+			  format terror $2. ;
+ 			  format Prim_or_Xs $20. ;
+	          format Num_of_Loc 10. ;
+			  format CAT_Modeling $10. ;
+			  format Old_Occupancy $80. ;
+			  format Prim_Occupancy $60. ;
+/*	          format Structure $100. ;*/
+/*	          format Cover $100. ;*/
+			  format Currency1 $20. ;
+			  format PD comma17.2 ;
+	          format BI comma17.2 ;
+	          format TIV comma18.2 ;
+	          format Currency2 $20. ;
+	          format Attach_Point comma20.2;
+	          format Limits comma20.2;
+			  format Deductibles comma20.2;
+			  format Premium_Cur $10. ;
+	          format Expected_Premium comma20.2 ;
+	          format Loss_Period comma20.2 ;
+	          format Loss_Period 10. ;
+			  format Annual_Burn_Rate comma20.2 ;
+			  format Quote best12.;
+	         	
+	       input                             
+				Submission_ID $
+/*				Received_Date*/
+/*				Inception_Date*/
+/*				DIFF_Incept_Rec */
+				Type $
+				Broker_Comp $
+				Broker_Parent_Name $
+/*				Broker_Name $*/
+				Insured_Name $
+				Risk_Location $
+				Class_Code_Desc $
+				Class_Code_Desc_NEW $
+				location $
+				terror $
+				Prim_or_Xs $
+				Num_of_Loc
+				CAT_Modeling $
+				Old_Occupancy $
+				Prim_Occupancy $
+/*				Structure $*/
+/*				Cover $ */
+				Currency1 $
+				PD 
+				BI
+				TIV
+				Currency2 $
+				Attach_Point
+				Limits
+				Deductibles
+				Premium_Cur $
+				Expected_Premium
+				Loss_Period
+				Loss_Period
+				Annual_Burn_Rate
+				Quote
+	       ;
+	       if _ERROR_ then call symputx('_EFIERR_',1);  /* set ERROR detection macro variable */
+	       run;
+	/* EDD to get an understanding of the data */
+	data sub.SubmissionDataupdated1 (drop = Currency1 Currency2 Premium_Cur);
+	set sub.SubmissionDataupdated1;
+	run;
+	data sub.SubmissionDataupdated1 ;
+	retain Submission_ID Insured_Name Type Quote Broker_Comp Broker_Parent_Name Risk_Location Class_Code_Desc Class_Code_Desc_NEW location terror Prim_or_Xs Num_of_Loc CAT_Modeling 
+	Old_Occupancy Prim_Occupancy PD BI TIV Attach_Point Limits Deductibles Expected_Premium Loss_Period Loss_Period Annual_Burn_Rate;
+	set sub.SubmissionDataupdated1;
+	run;
+	OPTIONS mstored sasmstore=catlg;
+	%EDD(
+	INLIB = sub,
+	INPUTDATA = SubmissionDataupdated,
+	EDD_OUT_LOC_XLS = O:\YRC070\Users\Sudipta96408\Liberty\Datasets\EDDDatasets,
+	OUTLIB = Lib_EDD,
+	OUTDATA = EDD,
+	NUM_UNIQ = Y );
+/*	data sub.SubmissionDataupdated;*/
+/*	set sub.SubmissionDataupdated;*/
+/*	if Class_Code_Desc = "International Primary" or Class_Code_Desc = "INTERNATIONAL primary" or Class_Code_Desc = "INTERNATIONAL PRIMARY" then Class_Code_Desc = "INTERNATIONAL PRIMARY";*/
+/*	run;*/
+/*	data sub.SubmissionData;*/
+/*	set sub.SubmissionData;*/
+/*	terror1 = put(terror,$2.);*/
+/*	drop terror;*/
+/*	rename terror1 = terror;*/
+/*	run;*/
+	/*Delete extra variables */
+/*	data sub.SubmissionModelData ;*/
+/*	set sub.SubmissionData;*/
+/*	run;*/
+/*	data sub.SubmissionModelData(Drop = Received_Date Inception_Date DIFF_Incept_Rec Broker_Name Structure Cover Currency1 Currency2 Premium_Cur);*/
+/*	set sub.SubmissionModelData;*/
+/*	run;*/
+******************Bi variate analysis for numeric variables.****************
+/*creating Deciles using proc rank*/;
+	%macro bivariate(vari);
+	Proc Rank data = sub.SubmissionDataupdated1 groups = 10 ties=Dense out = dec&amp;vari (keep = &amp;vari  Decile Quote);
+	var &amp;vari;
+	ranks Decile;
+	run;
+	proc means data  = dec&amp;vari noprint missing nway;
+	class Decile;
+	var &amp;vari Quote;
+	output out = Lib_EDD.bivar&amp;vari (drop  = _TYPE_ _FREQ_)
+	n= n
+	nmiss = nmiss
+	min(&amp;vari) = min 
+	max(&amp;vari) = max
+	mean(Quote) = event_mean
+	sum(Quote) = event_count;
+	run;
+	data Lib_EDD.bivar&amp;vari;
+	set Lib_EDD.bivar&amp;vari;
+	length variable $50.;
+	format variable $50.;
+	informat variable $50.;
+	if n ne 0 then non_event_count = n - event_count;
+	else non_event_count = nmiss-event_count;
+	per_event = event_count/469;
+	per_nonevent = non_event_count/544;
+	WOE = log(per_event/per_nonevent);
+	W_WOE = (per_event-per_nonevent)*WOE;
+	variable = "&amp;vari";
+	run;
+	proc sql;
+	create table test as select sum(W_WOE) as IV, variable  
+	from Lib_EDD.bivar&amp;vari
+	group by variable;
+	quit;
+	proc append base  = Lib_EDD.IV_table data = test ;
+	run;
+	proc append base  = Lib_EDD.bivar_all data = Lib_EDD.bivar&amp;vari force;
+	run;
+	%mend bivariate;
+	option mlogic;
+	option mprint;
+	%bivariate(Num_of_Loc); /*Added later */
+
+	%bivariate(Num_of_Loc);
+	%bivariate(Attach_Point);
+	%bivariate(Limits);
+	%bivariate(Deductibles);
+	%bivariate(PD);
+	%bivariate(BI);
+	%bivariate(TIV);
+	%bivariate(Expected_Premium);
+	%bivariate(Loss_Period);
+	%bivariate(Loss_Period);
+	%bivariate(Annual_Burn_Rate);
+/*******************Bi variate analysis for Categorical variables.*****************/
+	%macro bivariate_cat(vari);
+	proc means data  = sub._25octsubmissiodata noprint missing nway;
+	class &amp;vari;
+	var Quote;
+	output out = Lib_EDD.&amp;vari (drop  = _TYPE_ _FREQ_)
+	n= n
+	nmiss = nmiss
+	mean(Quote) = event_mean
+	sum(Quote) = event_count;
+	run;
+	data Lib_EDD.&amp;vari;
+	set Lib_EDD.&amp;vari;
+	length variable $100.;
+	format variable $100.;
+	informat variable $100.;
+	if n ne 0 then non_event_count = n - event_count;
+	else non_event_count = nmiss-event_count;
+	per_event = event_count/469;
+	per_nonevent = non_event_count/544;
+	WOE = log(per_event/per_nonevent); /* weight of evidence */
+	W_WOE = (per_event-per_nonevent)*WOE;
+	variable = "&amp;vari";
+	run;
+	proc sql;
+	create table test as select sum(W_WOE) as IV, variable  
+	from Lib_EDD.&amp;vari
+	group by variable;
+	quit;
+/*	proc append base  = Lib_EDD.IV_table data = test force;*/
+/*	run;*/
+/*	proc append base  = Lib_EDD.bivar_all_cat data = Lib_EDD.bivar_cat&amp;vari force;*/
+/*	run;*/
+	%mend bivariate_cat;
+	option mlogic;
+	option mprint;
+	%bivariate_cat(ABRDIVTIV_bucket);
+	%bivariate_cat(Broker_Parent_Name3);
+	%bivariate_cat(Broker_Parent_Name);
+	%bivariate_cat(CAT_Modeling);
+	%bivariate_cat(Class_Code_Desc);
+	%bivariate_cat(Class_Code_Desc_NEW);
+	%bivariate_cat(Old_Occupancy);
+	%bivariate_cat(Prim_Occupancy);
+	%bivariate_cat(Prim_or_Xs);
+	%bivariate_cat(Risk_Location);
+	%bivariate_cat(Type);
+	%bivariate_cat(location);
+	%bivariate_cat(terror);
+	/**Export**/
+	OPTIONS NOMPRINT NOMLOGIC;
+	%macro exportdata(a=);
+	PROC EXPORT 
+		    DATA = Lib_edd.&amp;a 
+	 	    OUTFILE="O:\YRC070\Users\Sudipta96408\Liberty\Export\New folder\&amp;a..csv"
+			DBMS=csv
+		    REPLACE;
+	run;
+	%mend exportdata;
+	%exportdata(a=Bivar_catclass_code_desc);
+	%exportdata(a=Bivar_catclass_code_desc_new);
+	%exportdata(a=Bivar_catbroker_parent_name);
+	%exportdata(a=Bivar_catbroker_comp);
+	%exportdata(a=bivar_catClass_Code_Desc);
+	%exportdata(a=bivar_catCAT_Modeling);
+	%exportdata(a=bivar_catPrim_or_Xs);
+	%exportdata(a=bivar_catOld_Occupancy);
+	%exportdata(a=bivar_catPrim_Occupancy);
+	%exportdata(a=bivar_catlocation);
+	%exportdata(a=bivar_catType);
+	%exportdata(a=bivar_catterror);
+
+/**** Transforming Variables ****/
+	data sub.SubmissionDataupdated1;
+	set sub.SubmissionDataupdated1;
+
+	Length Numofloc_bucket $32.;
+	Length PD_bucket $32.;
+	Length BI_bucket $32.;
+	Length TIV_bucket $32.;
+	Length ATPoint_bucket $32.;
+	Length Limit_bucket $32.;
+	Length Deduct_bucket $32.;
+	Length Premium_bucket $32.;
+	Length Losshist_bucket $32.;
+	Length LossPeriod_bucket $32.;
+	Length AnnuBurnRate_bucket $32.;
+
+	if Num_of_Loc = . then Numofloc_bucket = "Bucket_Missing";
+	else if Num_of_Loc &gt;=0 and Num_of_Loc &lt;=28 then Numofloc_bucket ="Bucket_1";
+	else if Num_of_Loc &gt;28 and Num_of_Loc &lt;=59 then Numofloc_bucket ="Bucket_2";
+	else if Num_of_Loc &gt;59 and Num_of_Loc &lt;=91 then Numofloc_bucket ="Bucket_3";
+	else if Num_of_Loc &gt;91 and Num_of_Loc &lt;=146 then Numofloc_bucket ="Bucket_4";
+	else if Num_of_Loc &gt;146 and Num_of_Loc &lt;=214 then Numofloc_bucket ="Bucket_5";
+	else if Num_of_Loc &gt;214 and Num_of_Loc &lt;=308 then Numofloc_bucket ="Bucket_6";
+	else if Num_of_Loc &gt;308 and Num_of_Loc &lt;=499 then Numofloc_bucket ="Bucket_7";
+	else if Num_of_Loc &gt;499 and Num_of_Loc &lt;=975 then Numofloc_bucket ="Bucket_8";
+	else if Num_of_Loc &gt;975 and Num_of_Loc &lt;=2369 then Numofloc_bucket ="Bucket_9";
+	else if Num_of_Loc &gt;2369 then Numofloc_bucket ="Bucket_10";
+
+	if PD = . then PD_bucket = "Bucket_Missing";
+	else if PD &gt;=0.0 and PD &lt;=10287242.64 then PD_bucket ="Bucket_1";
+	else if PD &gt;10287242.64 and PD &lt;=17217558.10 then PD_bucket ="Bucket_2";
+	else if PD &gt;17217558.10 and PD &lt;=27784317.91 then PD_bucket ="Bucket_3";
+	else if PD &gt;27784317.91 and PD &lt;=45781172.80 then PD_bucket ="Bucket_4";
+	else if PD &gt;45781172.80 and PD &lt;=80333572.10 then PD_bucket ="Bucket_5";
+	else if PD &gt;80333572.10 and PD &lt;=129419548.60 then PD_bucket ="Bucket_6";
+	else if PD &gt;129419548.60 and PD &lt;=197212244.65 then PD_bucket ="Bucket_7";
+	else if PD &gt;197212244.65 and PD &lt;=334530026.40 then PD_bucket ="Bucket_8";
+	else if PD &gt;334530026.40 and PD &lt;=557395520.30 then PD_bucket ="Bucket_9";
+	else if PD &gt;557395520.30 then PD_bucket ="Bucket_10";
+
+	if BI = . then BI_bucket = "Bucket_Missing";
+	else if BI &gt;=0.0 and BI &lt;=1292492.81 then BI_bucket ="Bucket_1";
+	else if BI &gt;1292492.81 and BI &lt;=11215797.67 then BI_bucket ="Bucket_2";
+	else if BI &gt;11215797.67 and BI &lt;=17479698.96 then BI_bucket ="Bucket_3";
+	else if BI &gt;17479698.96 and BI &lt;=31648891.84 then BI_bucket ="Bucket_4";
+	else if BI &gt;31648891.84 and BI &lt;=54237864.60 then BI_bucket ="Bucket_5";
+	else if BI &gt;54237864.60 and BI &lt;=91367329.30 then BI_bucket ="Bucket_6";
+	else if BI &gt;91367329.30 and BI &lt;=146887217.70 then BI_bucket ="Bucket_7";
+	else if BI &gt;146887217.70 and BI &lt;=256057119.30 then BI_bucket ="Bucket_8";
+	else if BI &gt;256057119.30 and BI &lt;=466312652.50 then BI_bucket ="Bucket_9";
+	else if BI &gt;466312652.50 then BI_bucket ="Bucket_10";
+
+	if TIV = . then TIV_bucket = "Bucket_Missing";
+	else if TIV &gt;=0.0 and TIV &lt;=8409535.20 then TIV_bucket ="Bucket_1";
+	else if TIV &gt;8409535.20 and TIV &lt;=14830264.46 then TIV_bucket ="Bucket_2";
+	else if TIV &gt;14830264.46 and TIV &lt;=24080134.68 then TIV_bucket ="Bucket_3";
+	else if TIV &gt;24080134.68 and TIV &lt;=39253869.93 then TIV_bucket ="Bucket_4";
+	else if TIV &gt;39253869.93 and TIV &lt;=70571844.36 then TIV_bucket ="Bucket_5";
+	else if TIV &gt;70571844.36 and TIV &lt;=118715494.90 then TIV_bucket ="Bucket_6";
+	else if TIV &gt;118715494.90 and TIV &lt;=189294152.56 then TIV_bucket ="Bucket_7";
+	else if TIV &gt;189294152.56 and TIV &lt;=303018100.53 then TIV_bucket ="Bucket_8";
+	else if TIV &gt;303018100.53 and TIV &lt;=566825840.80 then TIV_bucket ="Bucket_9";
+	else if TIV &gt;566825840.80 then TIV_bucket ="Bucket_10";
+
+	if Attach_Point = . then ATPoint_bucket = "Bucket_Missing";
+	else if Attach_Point &gt;=0.0 and Attach_Point &lt;=39699.20 then ATPoint_bucket ="Bucket_1";
+	else if Attach_Point &gt;39699.20 and Attach_Point &lt;=200000.00 then ATPoint_bucket ="Bucket_2";
+	else if Attach_Point &gt;200000.00 and Attach_Point &lt;=873383.40 then ATPoint_bucket ="Bucket_3";
+	else if Attach_Point &gt;873383.40 and Attach_Point &lt;=2937744.30 then ATPoint_bucket ="Bucket_4";
+	else if Attach_Point &gt;2937744.30 and Attach_Point &lt;=5875488.60 then ATPoint_bucket ="Bucket_5";
+	else if Attach_Point &gt;5875488.60 and Attach_Point &lt;=14688721.60 then ATPoint_bucket ="Bucket_6";
+	else if Attach_Point &gt;14688721.60 and Attach_Point &lt;=23819548.80 then ATPoint_bucket ="Bucket_7";
+	else if Attach_Point &gt;23819548.80 and Attach_Point &lt;=53191489.40 then ATPoint_bucket ="Bucket_8";
+	else if Attach_Point &gt;53191489.40 and Attach_Point &lt;=131007513.30 then ATPoint_bucket ="Bucket_9";
+	else if Attach_Point &gt;131007513.30 then ATPoint_bucket ="Bucket_10";
+
+	if Limits = . then Limit_bucket = "Bucket_Missing";
+	else if Limits &gt;=0.0 and Limits &lt;=175000.00 then Limit_bucket ="Bucket_1";
+	else if Limits &gt;175000.00 and Limits &lt;=1032180.40 then Limit_bucket ="Bucket_2";
+	else if Limits &gt;1032180.40 and Limits &lt;=5089058.50 then Limit_bucket ="Bucket_3";
+	else if Limits &gt;5089058.50 and Limits &lt;=13971524.78 then Limit_bucket ="Bucket_4";
+	else if Limits &gt;13971524.78 and Limits &lt;=21834585.50 then Limit_bucket ="Bucket_5";
+	else if Limits &gt;21834585.50 and Limits &lt;=42875187.90 then Limit_bucket ="Bucket_6";
+	else if Limits &gt;42875187.90 and Limits &lt;=88132329.60 then Limit_bucket ="Bucket_7";
+	else if Limits &gt;88132329.60 and Limits &lt;=158796992.10 then Limit_bucket ="Bucket_8";
+	else if Limits &gt;158796992.10 and Limits &lt;=317593984.20 then Limit_bucket ="Bucket_9";
+	else if Limits &gt;317593984.20 then Limit_bucket ="Bucket_10";
+
+	if Deductibles = . then Deduct_bucket = "Bucket_Missing";
+	else if Deductibles &gt;=0.0 and Deductibles &lt;=527.60 then Deduct_bucket ="Bucket_1";
+	else if Deductibles &gt;527.60 and Deductibles &lt;=2778.90 then Deduct_bucket ="Bucket_2";
+	else if Deductibles &gt;2778.90 and Deductibles &lt;=10810.30 then Deduct_bucket ="Bucket_3";
+	else if Deductibles &gt;10810.30 and Deductibles &lt;=43669.20 then Deduct_bucket ="Bucket_4";
+	else if Deductibles &gt;43669.20 and Deductibles &lt;=131007.50 then Deduct_bucket ="Bucket_5";
+	else if Deductibles &gt;131007.50 and Deductibles &lt;=363504.18 then Deduct_bucket ="Bucket_6";
+	else if Deductibles &gt;363504.18 and Deductibles &lt;=793984.96 then Deduct_bucket ="Bucket_7";
+	else if Deductibles &gt;793984.96 and Deductibles &lt;=2064360.90 then Deduct_bucket ="Bucket_8";
+	else if Deductibles &gt;2064360.90 and Deductibles &lt;=7939849.60 then Deduct_bucket ="Bucket_9";
+	else if Deductibles &gt;7939849.60 then Deduct_bucket ="Bucket_10";
+
+	if Expected_Premium = . then Premium_bucket = "Bucket_Missing";
+	else if Expected_Premium &gt;=0.0 and Expected_Premium &lt;=6351.88 then Premium_bucket ="Bucket_1";
+	else if Expected_Premium &gt;6351.88 and Expected_Premium &lt;=58342.10 then Premium_bucket ="Bucket_2";
+	else if Expected_Premium &gt;58342.10 and Expected_Premium &lt;=123861.70 then Premium_bucket ="Bucket_3";
+	else if Expected_Premium &gt;123861.70 and Expected_Premium &lt;=223586.20 then Premium_bucket ="Bucket_4";
+	else if Expected_Premium &gt;223586.20 and Expected_Premium &lt;=349353.40 then Premium_bucket ="Bucket_5";
+	else if Expected_Premium &gt;349353.40 and Expected_Premium &lt;=529786.50 then Premium_bucket ="Bucket_6";
+	else if Expected_Premium &gt;529786.50 and Expected_Premium &lt;=724114.30 then Premium_bucket ="Bucket_7";
+	else if Expected_Premium &gt;724114.30 and Expected_Premium &lt;=1190977.40 then Premium_bucket ="Bucket_8";
+	else if Expected_Premium &gt;1190977.40 and Expected_Premium &lt;=2661834.60 then Premium_bucket ="Bucket_9";
+	else if Expected_Premium &gt;2661834.60 then Premium_bucket ="Bucket_10";
+
+	if Loss_Period = . then Losshist_bucket = "Bucket_Missing";
+	else if Loss_Period &gt;=0.0 and Loss_Period &lt;=27935.60 then Losshist_bucket ="Bucket_1";
+	else if Loss_Period &gt;27935.60 and Loss_Period &lt;=126132.50 then Losshist_bucket ="Bucket_2";
+	else if Loss_Period &gt;126132.50 and Loss_Period &lt;=444647.20 then Losshist_bucket ="Bucket_3";
+	else if Loss_Period &gt;444647.20 and Loss_Period &lt;=1567497.90 then Losshist_bucket ="Bucket_4";
+	else if Loss_Period &gt;1567497.90 and Loss_Period &lt;=3170591.60 then Losshist_bucket ="Bucket_5";
+	else if Loss_Period &gt;3170591.60 and Loss_Period &lt;=7781052.60 then Losshist_bucket ="Bucket_6";
+	else if Loss_Period &gt;7781052.60 and Loss_Period &lt;=16098838.90 then Losshist_bucket ="Bucket_7";
+	else if Loss_Period &gt;16098838.90 and Loss_Period &lt;=30198326.30 then Losshist_bucket ="Bucket_8";
+	else if Loss_Period &gt;30198326.30 and Loss_Period &lt;=78802360.20 then Losshist_bucket ="Bucket_9";
+	else if Loss_Period &gt;78802360.20 then Losshist_bucket ="Bucket_10";
+
+	if Loss_Period = . then LossPeriod_bucket = "Bucket_Missing";
+	else if Loss_Period &gt;=0 and Loss_Period &lt;=2 then LossPeriod_bucket ="Bucket_1";
+	else if Loss_Period &gt;2 and Loss_Period &lt;=5 then LossPeriod_bucket ="Bucket_2";
+	else if Loss_Period &gt;5 and Loss_Period &lt;=7 then LossPeriod_bucket ="Bucket_3";
+	else if Loss_Period &gt;7 and Loss_Period &lt;=10 then LossPeriod_bucket ="Bucket_4";
+	else if Loss_Period &gt;10 and Loss_Period &lt;=12 then LossPeriod_bucket ="Bucket_5";
+	else if Loss_Period &gt;12 and Loss_Period &lt;=15 then LossPeriod_bucket ="Bucket_6";
+	else if Loss_Period &gt;15 and Loss_Period &lt;=18 then LossPeriod_bucket ="Bucket_7";
+	else if Loss_Period &gt;18 and Loss_Period &lt;=20 then LossPeriod_bucket ="Bucket_8";
+	else if Loss_Period &gt;20 and Loss_Period &lt;=23 then LossPeriod_bucket ="Bucket_9";
+	else if Loss_Period &gt;23 then LossPeriod_bucket ="Bucket_10";
+
+	if Annual_Burn_Rate = . then AnnuBurnRate_bucket = "Bucket_Missing";
+	else if Annual_Burn_Rate &gt;=0.0 and Annual_Burn_Rate &lt;=7311.78 then AnnuBurnRate_bucket ="Bucket_1";
+	else if Annual_Burn_Rate &gt;7311.78 and Annual_Burn_Rate &lt;=32365.30 then AnnuBurnRate_bucket ="Bucket_2";
+	else if Annual_Burn_Rate &gt;32365.30 and Annual_Burn_Rate &lt;=95366.70 then AnnuBurnRate_bucket ="Bucket_3";
+	else if Annual_Burn_Rate &gt;95366.70 and Annual_Burn_Rate &lt;=313499.60 then AnnuBurnRate_bucket ="Bucket_4";
+	else if Annual_Burn_Rate &gt;313499.60 and Annual_Burn_Rate &lt;=648654.90 then AnnuBurnRate_bucket ="Bucket_5";
+	else if Annual_Burn_Rate &gt;648654.90 and Annual_Burn_Rate &lt;=1256045.30 then AnnuBurnRate_bucket ="Bucket_6";
+	else if Annual_Burn_Rate &gt;1256045.30 and Annual_Burn_Rate &lt;=2447706.20 then AnnuBurnRate_bucket ="Bucket_7";
+	else if Annual_Burn_Rate &gt;2447706.20 and Annual_Burn_Rate &lt;=4276422.80 then AnnuBurnRate_bucket ="Bucket_8";
+	else if Annual_Burn_Rate &gt;4276422.80 and Annual_Burn_Rate &lt;=8758546.60 then AnnuBurnRate_bucket ="Bucket_9";
+	else if Annual_Burn_Rate &gt;8758546.60 then AnnuBurnRate_bucket ="Bucket_10";
+	run;
+/*	data sub.SubmissionModelData_new;*/
+/*	set sub.SubmissionModelData_new;*/
+/*	LENGTH Class_Code_Desc1 $32.;*/
+/*	Class_Code_Desc1 = Class_Code_Desc;*/
+/*	run;*/
+/*	data sub.SubmissionModelData_new;*/
+/*	set sub.SubmissionModelData_new;*/
+/*	if Class_Code_Desc1 = "NORTH AMERICA TERROR PRIMARY" or Class_Code_Desc1 = "INTERNATIONAL TERROR PRIMARY" or Class_Code_Desc1 = "NORTH AMERICA TERROR XS"*/
+/*	or Class_Code_Desc1 = "ASIA PACIFIC TERROR PRIMARY" or Class_Code_Desc1 = "INTERNATIONAL TERROR XS" or Class_Code_Desc1 = "SOUTH AMERICA TERROR PRIMARY" then */
+/*	Class_Code_Desc1 = "TERROR";*/
+/*	run;*/
+/*	data sub.SubmissionModelData_new1;*/
+/*	set sub.SubmissionModelData_new;*/
+/*	LENGTH Class_Code_Desc2 $32.;*/
+/*	Class_Code_Desc2 = Class_Code_Desc1;*/
+/*	run;*/
+/*	data sub.SubmissionModelData_new2;*/
+/*	set sub.SubmissionModelData_new;*/
+/*	if Class_Code_Desc1 = "NORTH AMERICA PRIMARY" then Class_Code_Desc2 = "NORTH AMERICA PRIMARY";*/
+/*	else if Class_Code_Desc1 = "NORTH AMERICA XS" then Class_Code_Desc2 = "NORTH AMERICA XS";*/
+/*	else Class_Code_Desc2 = "Others";*/
+/*	run;*/
+/*** Bivariate for these buckets */
+%macro bivariate_cat(vari);
+proc means data  = sub._25octsubmissiodata1 noprint missing nway;
+class &amp;vari;
+var Quote;
+output out = Lib_EDD.&amp;vari (drop  = _TYPE_ _FREQ_)
+n= n
+nmiss = nmiss
+mean(Quote) = event_mean
+sum(Quote) = event_count;
+run;
+data Lib_EDD.&amp;vari;
+set Lib_EDD.&amp;vari;
+length variable $50.;
+format variable $50.;
+informat variable $50.;
+if n ne 0 then non_event_count = n - event_count;
+else non_event_count = nmiss-event_count;
+per_event = event_count/469;
+per_nonevent = non_event_count/539;
+&amp;vari.WOE = log(per_event/per_nonevent);
+W_WOE = (per_event-per_nonevent)*(&amp;vari.WOE);
+variable = "&amp;vari";
+run;
+%mend bivariate_cat;
+%bivariate_cat(Type);
+%bivariate_cat(PD_bucket);
+%bivariate_cat(BI_bucket);
+%bivariate_cat(TIV_bucket);
+%bivariate_cat(ATPoint_bucket);
+%bivariate_cat(Limit_bucket);
+%bivariate_cat(Deduct_bucket);
+%bivariate_cat(Premium_bucket);
+%bivariate_cat(Losshist_bucket);
+%bivariate_cat(LossPeriod_bucket);
+%bivariate_cat(AnnuBurnRate_bucket);
+%macro woe(vari);
+proc sql;
+create table sub.SubmissionDataupdated1 as select a.*, b.&amp;vari.WOE
+from sub.SubmissionDataupdated1 as a left join Lib_EDD.&amp;vari as b
+on a.&amp;vari = b.&amp;vari;
+quit;
+%mend woe;
+%woe(Numofloc_bucket);
+%woe(PD_bucket);
+%woe(BI_bucket);
+%woe(TIV_bucket);
+%woe(ATPoint_bucket);
+%woe(Limit_bucket);
+%woe(Deduct_bucket);
+%woe(Premium_bucket);
+%woe(Losshist_bucket);
+%woe(LossPeriod_bucket);
+%woe(AnnuBurnRate_bucket);
+/*data sub.check;*/
+/*set sub.SubmissionModelData1;*/
+/*if */
+/*run;*/
+/**Export**/
+	OPTIONS NOMPRINT NOMLOGIC;
+	%macro exportdata(a=);
+	PROC EXPORT 
+		    DATA = Lib_edd.&amp;a 
+	 	    OUTFILE="O:\YRC070\Users\Sudipta96408\Liberty\Export\New folder\New folder\&amp;a..csv"
+			DBMS=csv
+		    REPLACE;
+	run;
+	%mend exportdata;
+%exportdata(a=Numofloc_bucket);
+%exportdata(a=TIV_bucket);
+%exportdata(a=AnnuBurnRate_bucket);
+%exportdata(a=Premium_bucket);
+%exportdata(a=BivarExpected_Premium);
+%exportdata(a=BivarLimits);
+%exportdata(a=BivarLoss_Period);
+%exportdata(a=BivarLoss_Period);
+%exportdata(a=BivarNum_of_Loc);
+%exportdata(a=BivarPD);
+%exportdata(a=BivarTIV);
+/*Segregation*/
+
+data sub.SubmissionDataupdated1;
+set sub.SubmissionDataupdated1;
+LENGTH Broker_Parent_Name3 $32.;
+Broker_Parent_Name3 = Broker_Parent_Name;
+run;
+
+/*data sub.SubmissionDataupdated1;*/
+/*set sub.SubmissionDataupdated1;*/
+/*if Broker_Parent_Name = "AON" or Broker_Parent_Name = "MARSH" or Broker_Parent_Name = "R K HARRISON" or Broker_Parent_Name = "WILLIS" or Broker_Parent_Name = "BMS" then Broker_Parent_Name3 = "BUCKET_1";*/
+/*if Broker_Parent_Name = "AON" or Broker_Parent_Name = "MARSH" or Broker_Parent_Name = "R K HARRISON" then Broker_Parent_Name3 = "BUCKET_1";*/
+/*else if Broker_Parent_Name2 = "PRICE FORBES" or Broker_Parent_Name2 = "MILLER" or Broker_Parent_Name2 = "HOWDEN" or Broker_Parent_Name2 = "THB" or Broker_Parent_Name2 = "NEWMAN MARTIN AND BUCHAN" then Broker_Parent_Name3 = "BUCKET_3";*/
+/*else Broker_Parent_Name3 = "OTHERS";*/
+/*run;*/
+data sub.SubmissionDataupdated2;
+set sub.SubmissionDataupdated1;
+LENGTH Broker_Parent_Name3 $32.;
+Broker_Parent_NameNew = Broker_Parent_Name;
+run;
+/*data sub.SubmissionDataupdated2;*/
+/*set sub.SubmissionDataupdated2;*/
+/*if Broker_Parent_Name = "Guy Carpenter" then Broker_Parent_NameNew ="MARSH";*/
+/*run;*/
+
+data sub._24OctSubmissioData;
+set sub._16octsubmissiodata1;
+length Broker_Parent_NameNwBucket $30.;
+if Broker_Parent_Name = "JLT" 
+or Broker_Parent_Name = "AON" 
+or Broker_Parent_Name = "PRICE FORBES" then Broker_Parent_NameNwBucket = "Bucket_Red";
+else if Broker_Parent_Name = "MARSH" 
+or Broker_Parent_Name = "LOCKTON" 
+or Broker_Parent_Name = "OTHERS" then Broker_Parent_NameNwBucket = "Bucket_Green";
+else if Broker_Parent_Name = "TOWERS WATSON"
+or Broker_Parent_Name = "R K HARRISON" 
+or Broker_Parent_Name = "GALLAGHER HEATH" 
+or Broker_Parent_Name = "WILLIS" then Broker_Parent_NameNwBucket = "Bucket_Orange"; 
+else if Broker_Parent_Name = "MILLER" then Broker_Parent_NameNwBucket = "Bucket_White";
+else Broker_Parent_NameNwBucket = "Bucket_Yellow";
+run;
+/*Model 1 Prim Occupancy*/
+/*data sub.SubmissionDataupdated_New1;*/
+/*set sub.SubmissionDataupdated_New1;*/
+/*LENGTH Prim_Occupancy1 $60.;*/
+/*Prim_Occupancy1 = Prim_Occupancy;*/
+/*run;*/
+/**/
+/*data sub.SubmissionDataupdated_New1;*/
+/*set sub.SubmissionDataupdated_New1;*/
+/*if Prim_Occupancy = "Utilities" then Prim_Occupancy1 = "Utilities";*/
+/*else if  Prim_Occupancy = "Industrial Heavy" then Prim_Occupancy1 = "Industrial Heavy";*/
+/*else if  Prim_Occupancy = "Residential" then Prim_Occupancy1 = "Residential";*/
+/*else if Prim_Occupancy = "Industrial Light &amp; Manufacturing" then Prim_Occupancy1 = "Industrial Light &amp; Manufacturing";*/
+/*else if Prim_Occupancy = "Entertainment" then Prim_Occupancy1 = "Entertainment";*/
+/*else Prim_Occupancy1 = "OTHERS";*/
+/*run;*/
+/*proc freq data = sub.SubmissionDataupdated_New1;*/
+/*tables  Prim_Occupancy1* Type;*/
+/*run;*/
+/*Running proc logistics*/
+data mod.Temp;
+set sub.SubmissionDataupdated1;
+n=ranuni(8);
+run;
+proc sort data= mod.Temp;
+by n;
+run;
+data mod.training mod.testing;
+set mod.Temp nobs=nobs;
+if _n_&lt;=.6*nobs then output mod.training;
+else output mod.testing;
+run;
+/*Running proc logistics on the training data*/
+/* Old_Occupancy Class_Code_Desc Class_Code_Desc_NEW Broker_Comp Broker_Parent_Name3 location CAT_Modeling Prim_Occupancy Type*/
+PROC LOGISTIC
+DATA = mod.training NAMELEN = 32 DESCENDING
+OUTEST = mod.OutEst_WOTERROR OUTMODEL = mod.QuoteModel_WOTERROR;
+CLASS Type Prim_or_Xs Broker_Parent_Name3 location;
+/*CLASS location;*/
+MODEL Quote =
+Prim_or_Xs
+Broker_Parent_Name3 
+Type
+Numofloc_bucketWOE
+Premium_bucketWOE
+AnnuBurnRate_bucketWOE
+location
+/ SELECTION = FORWARD
+SLE = 0.05
+SLS = 0.05
+LACKFIT
+RSQUARE
+STB
+CLPARM = WALD
+PARMLABEL
+/*requests detailed results at each step*/
+/*DETAILS*/
+/*specifies whether and how hierarchy is maintained and whether a single effect or multiple effects are allowed to enter or leave the model per step*/
+/*HIERARCHY = */
+/*displays influence statestics*/
+/*INFLUENCE */
+CTABLE;
+/*OUTROC = trainROC;*/
+OUTPUT OUT = mod.Log_Reg_WOTERROR P = p_1;
+/*score data = EDD.testing out = testpredictions outroc = testroc;*/
+ODS OUTPUT PARAMETERESTIMATES = mod.Para_Est_WOTERROR;
+ODS OUTPUT ASSOCIATION = mod.Association_WOTERROR;
+ODS OUTPUT FitStatistics = mod.FitStatis_WOTERROR;
+/*ODS OUTPUT RSquare = result.RSquare;*/
+ODS OUTPUT LackFitChiSq = mod.LackFitChiSq_WOTERROR;
+ODS OUTPUT Classification = mod.Classification_WOTERROR;
+ODS OUTPUT ModelBuildingSummary = mod.ModelBuildingSummary_WOTERROR;
+RUN;
+
+/*exporting parameter and association  tables*/
+proc export data=mod.Para_est_woterror 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\Para_Est_WOTERROR.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.Association_WOTERROR 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\Association_WOTERROR.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.ModelBuildingSummary_WOTERROR 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\ModelBuildingSummary_WOTERROR.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.Association_FINAL 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\Association_FINAL.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.FitStatis_FINAL 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\FitStatis_FINAL.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.ModelBuildingSummary_FINAL 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\ModelBuildingSummary_FINAL.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.Classification_FINAL 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\Classification_FINAL.csv'
+   dbms=csv
+   replace;
+run;
+/*PROC LOGISTIC*/
+/*INMODEL = sub.QuoteModel;*/
+/*SCORE DATA = sub.training OUT = sub.Scored_train FITSTAT*/
+/*OUTROC = sub.ROC_train;*/
+/*RUN;*/
+/*Calculating Area under the curve for test and train datasets*/
+/*PROC LOGISTIC DATA = sub.Scored_train DESCENDING ;*/
+/*MODEL Quote = ;*/
+/*ROC PRED = P_1 ;*/
+/*ROCCONTRAST ;*/
+/*ods output ROCAssociation = sub.ROCAssociation;*/
+/*RUN ;*/
+/*making the confusion matrix or characteristic matrix*/
+/*proc freq data= sub.Scored_train; */
+/*Table F_Quote*I_Quote /nocol nocum norow nopercent; */
+/*run;*/
+/*Scoring the test dataset*/
+PROC LOGISTIC
+INEST = mod.OutEst_WOTERROR  INMODEL = mod.QuoteModel_WOTERROR;
+SCORE DATA = mod.testing OUT = mod.Scored_test_WOTERROR FITSTAT
+OUTROC = mod.ROC_test_WOTERROR;
+RUN;
+PROC LOGISTIC DATA = mod.Scored_test_WOTERROR DESCENDING ;
+MODEL Quote = ;
+ROC PRED = P_1 ;
+ROCCONTRAST ;
+ods output ROCAssociation = mod.ROCAssociation_WOTERROR;
+ODS OUTPUT PARAMETERESTIMATES = mod.Para_Est_WOTERROR;
+RUN ;
+proc export data=mod.Scored_test1 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\Scored_test1.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.Para_Est_Test 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\Para_Est_TestModel2.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod.Para_Est_Test 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\ROCAssociation_TestModel2.csv'
+   dbms=csv
+   replace;
+run;
+PROC LOGISTIC
+INMODEL = mod.Quotemodel1;
+SCORE DATA = mod.testing OUT = mod.Scored_testfinal FITSTAT
+OUTROC = mod.ROC_testfinal;
+RUN;
+proc export data=mod.ROC_testfinal 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\ROC_testfinal.csv'
+   dbms=csv
+   replace;
+run;
+data mod.check;
+set mod.Scored_test;
+if I_Quote = . ;
+run;
+/**Export**/
+	OPTIONS NOMPRINT NOMLOGIC;
+	%macro exportdata(a=);
+	PROC EXPORT 
+		    DATA = Lib_edd.&amp;a 
+	 	    OUTFILE="O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\FINAL\&amp;a..csv"
+			DBMS=csv
+		    REPLACE;
+	run;
+	%mend exportdata;
+	%exportdata(a=Bivarabr_div_tiv);
+	%exportdata(a=Tiv_bucket);
+	%exportdata(a=Atpoint_bucket);
+	%exportdata(a=Premium_bucket);
+	%exportdata(a=Losshist_bucket);
+	%exportdata(a=Lossperiod_bucket);
+	%exportdata(a=Annuburnrate_bucket);
+	%exportdata(a=Bivar_catclass_code_desc);
+	%exportdata(a=Bivar_catbroker_comp);
+	%exportdata(a=Bivar_cattype);
+
+/******************** New model Changes ***************************/
+data sub._16OctSubmissioData;
+set sub.Submissiondataupdated1;
+format ABR_DIV_TIV comma20.7;
+informat ABR_DIV_TIV comma20.7;
+if TIV = . or Annual_Burn_Rate = . then ABR_DIV_TIV = "";
+else ABR_DIV_TIV = Annual_Burn_Rate/TIV;
+run;
+/*Bivariate for ABR_DIV_TIV */;
+	%macro bivariate(vari);
+	Proc Rank data = sub._16octsubmissiodata1 groups = 10 ties=Dense out = dec&amp;vari (keep = &amp;vari  Decile Quote);
+	var &amp;vari;
+	ranks Decile;
+	run;
+	proc means data  = dec&amp;vari noprint missing nway;
+	class Decile;
+	var &amp;vari Quote;
+	output out = Lib_EDD.bivar&amp;vari (drop  = _TYPE_ _FREQ_)
+	n= n
+	nmiss = nmiss
+	min(&amp;vari) = min 
+	max(&amp;vari) = max
+	mean(Quote) = event_mean
+	sum(Quote) = event_count;
+	run;
+	data Lib_EDD.bivar&amp;vari;
+	set Lib_EDD.bivar&amp;vari;
+	length variable $50.;
+	format variable $50.;
+	informat variable $50.;
+	if n ne 0 then non_event_count = n - event_count;
+	else non_event_count = nmiss-event_count;
+	per_event = event_count/469;
+	per_nonevent = non_event_count/544;
+	WOE = log(per_event/per_nonevent);
+	W_WOE = (per_event-per_nonevent)*WOE;
+	variable = "&amp;vari";
+	run;
+	proc sql;
+	create table test as select sum(W_WOE) as IV, variable  
+	from Lib_EDD.bivar&amp;vari
+	group by variable;
+	quit;
+/*	proc append base  = Lib_EDD.IV_table data = test ;*/
+/*	run;*/
+/*	proc append base  = Lib_EDD.bivar_all data = Lib_EDD.bivar&amp;vari force;*/
+/*	run;*/
+	%mend bivariate;
+	option mlogic;
+	option mprint;
+	%bivariate(_bucket); /*Added later */
+
+	data sub._16octsubmissiodata1;
+	set sub._16octsubmissiodata;
+	Length _bucket $32.;
+	if ABR_DIV_TIV = . then _bucket = "Bucket_Missing";
+	else if ABR_DIV_TIV &gt;=0.00000 and ABR_DIV_TIV &lt;=0.0001295 then _bucket ="Bucket_1";
+	else if ABR_DIV_TIV &gt;0.0001295 and ABR_DIV_TIV &lt;=0.0004221 then _bucket ="Bucket_2";
+	else if ABR_DIV_TIV &gt;0.0004221 and ABR_DIV_TIV &lt;=0.0013251 then _bucket ="Bucket_3";
+	else if ABR_DIV_TIV &gt;0.0013251 and ABR_DIV_TIV &lt;=0.0034872 then _bucket ="Bucket_4";
+	else if ABR_DIV_TIV &gt;0.0034872 and ABR_DIV_TIV &lt;=0.0101896 then _bucket ="Bucket_5";
+	else if ABR_DIV_TIV &gt;0.0101896 and ABR_DIV_TIV &lt;=0.0205376 then _bucket ="Bucket_6";
+	else if ABR_DIV_TIV &gt;0.0205376 and ABR_DIV_TIV &lt;=0.0350387 then _bucket ="Bucket_7";
+	else if ABR_DIV_TIV &gt;0.0350387 and ABR_DIV_TIV &lt;=0.0655466 then _bucket ="Bucket_8";
+	else if ABR_DIV_TIV &gt;0.0655466 and ABR_DIV_TIV &lt;=0.1592771 then _bucket ="Bucket_9";
+	else if ABR_DIV_TIV &gt;0.1592771 then _bucket ="Bucket_10";
+	run;
+%macro bivariate_cat(vari);
+proc means data  = sub._25octsubmissiodata noprint missing nway;
+class &amp;vari;
+var Quote;
+output out = Lib_EDD.&amp;vari (drop  = _TYPE_ _FREQ_)
+n= n
+nmiss = nmiss
+mean(Quote) = event_mean
+sum(Quote) = event_count;
+run;
+data Lib_EDD.&amp;vari;
+set Lib_EDD.&amp;vari;
+length variable $50.;
+format variable $50.;
+informat variable $50.;
+if n ne 0 then non_event_count = n - event_count;
+else non_event_count = nmiss-event_count;
+per_event = event_count/469;
+per_nonevent = non_event_count/544;
+&amp;vari.WOE = log(per_event/per_nonevent);
+W_WOE = (per_event-per_nonevent)*(&amp;vari.WOE);
+variable = "&amp;vari";
+run;
+%mend bivariate_cat;
+%bivariate_cat(Lossper_bucketNew);
+%macro woe(vari);
+proc sql;
+create table sub._25octsubmissiodata as select a.*, b.&amp;vari.WOE
+from sub._25octsubmissiodata as a left join Lib_EDD.&amp;vari as b
+on a.&amp;vari = b.&amp;vari;
+quit;
+%mend woe;
+%woe(Lossper_bucketNew);
+/*Remove International locations*/
+data sub._25octsubmissiodata2;
+set sub._25octsubmissiodata;
+if locationWOE = . then locationWOE = 0.0000;
+run;
+/*Woe transformation on class variables*/
+/*** Bivariate for these buckets */
+%macro bivariate_cat(vari);
+proc means data  = sub._25octsubmissiodata1 noprint missing nway;
+class &amp;vari;
+var Quote;
+output out = Lib_EDD.&amp;vari (drop  = _TYPE_ _FREQ_)
+n= n
+nmiss = nmiss
+mean(Quote) = event_mean
+sum(Quote) = event_count;
+run;
+data Lib_EDD.&amp;vari;
+set Lib_EDD.&amp;vari;
+length variable $50.;
+format variable $50.;
+informat variable $50.;
+if n ne 0 then non_event_count = n - event_count;
+else non_event_count = nmiss-event_count;
+per_event = event_count/469;
+per_nonevent = non_event_count/544;
+&amp;vari.WOE = log(per_event/per_nonevent);
+W_WOE = (per_event-per_nonevent)*(&amp;vari.WOE);
+variable = "&amp;vari";
+run;
+%mend bivariate_cat;
+%bivariate_cat(Type);
+%bivariate_cat(Prim_or_Xs);
+%bivariate_cat(location);
+%bivariate_cat(Broker_Parent_NameNwBucket);
+%macro woe(vari);
+proc sql;
+create table sub._25octsubmissiodata1 as select a.*, b.&amp;vari.WOE
+from sub._25octsubmissiodata1 as a left join Lib_EDD.&amp;vari as b
+on a.&amp;vari = b.&amp;vari;
+quit;
+%mend woe;
+%woe(Type);
+%woe(Prim_or_Xs);
+%woe(location);
+%woe(Broker_Parent_NameNwBucket);
+/*check*/
+proc freq data = sub._24octsubmissiodata1;
+tables location;
+run;
+/*Run Model */
+data mod.Temp;
+set sub._25octsubmissiodata1;
+n=ranuni(8);
+run;
+proc sort data= mod.Temp;
+by n;
+run;
+data mod.training mod.testing;
+set mod.Temp nobs=nobs;
+if _n_&lt;=.7*nobs then output mod.training;
+else output mod.testing;
+run;
+/*Running proc logistics on the training data*/
+/* Old_Occupancy Class_Code_Desc Class_Code_Desc_NEW Broker_Comp Broker_Parent_Name3 location CAT_Modeling Prim_Occupancy Type _16octsubmissiodata1 _25octsubmissiodata1 */
+PROC LOGISTIC
+DATA = mod.training NAMELEN = 32 DESCENDING
+OUTEST = mod2.OutEst OUTMODEL = mod2.QuoteModel;
+CLASS Type Prim_or_Xs location Broker_Parent_NameNwBucket;
+MODEL Quote =
+Type
+Prim_or_Xs
+location
+Broker_Parent_NameNwBucket
+Numofloc_bucketWOE
+Premium_bucketWOE
+Lossper_bucketNewWOE
+/ SELECTION = FORWARD
+SLE = 0.05
+SLS = 0.05
+LACKFIT
+RSQUARE
+STB
+CLPARM = WALD
+PARMLABEL
+/*requests detailed results at each step*/
+/*DETAILS*/
+/*specifies whether and how hierarchy is maintained and whether a single effect or multiple effects are allowed to enter or leave the model per step*/
+/*HIERARCHY = */
+/*displays influence statestics*/
+/*INFLUENCE */
+CTABLE;
+/*OUTROC = trainROC;*/
+OUTPUT OUT = mod2.Log_Reg P = p_1;
+/*score data = EDD.testing out = testpredictions outroc = testroc;*/
+ODS OUTPUT PARAMETERESTIMATES = mod2.Para_Est;
+ODS OUTPUT ASSOCIATION = mod2.Association;
+ODS OUTPUT FitStatistics = mod2.FitStatis;
+/*ODS OUTPUT RSquare = result.RSquare;*/
+ODS OUTPUT LackFitChiSq = mod2.LackFitChiSq;
+ODS OUTPUT Classification = mod2.Classification;
+ODS OUTPUT ModelBuildingSummary = mod2.ModelBuildingSummary;
+RUN;
+
+/* MODEL */
+PROC LOGISTIC
+INEST = mod2.OutEst INMODEL = mod2.QuoteModel;
+SCORE DATA = mod.testing OUT = mod2.Scored_test FITSTAT
+OUTROC = mod2.ROC_test;
+RUN;
+PROC LOGISTIC DATA = mod2.Scored_test DESCENDING ;
+MODEL Quote = ;
+ROC PRED = P_1 ;
+ROCCONTRAST ;
+ods output ROCAssociation = mod2.ROCAssociation;
+ODS OUTPUT PARAMETERESTIMATES = mod2.Para_Est;
+RUN ;
+PROC LOGISTIC
+INMODEL = mod2.QuoteModel;
+SCORE DATA = mod.testing OUT = mod.Scored_testfinal FITSTAT
+OUTROC = mod2.ROC_testfinal;
+RUN;
+proc export data=mod2.ROC_testfinal 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\27oct\ROC_testfinal.csv'
+   dbms=csv
+   replace;
+run;
+/*export model train &amp; test variables */
+proc export data=mod2.Association 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\27oct\Association.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod2.Para_Est 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\27oct\Para_Est.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod2.ModelBuildingSummary 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\27oct\ModelBuildingSummary.csv'
+   dbms=csv
+   replace;
+run;
+/*Bootstrapping on the model*/
+OPTIONS mstored sasmstore=catlg;
+	%BOOT_BACK_GEN(
+	IN_FILE = sub._25octsubmissiodata2,
+	OUT_FILE = sub.Bootstrap_output,
+	SAMPLE_PCT = 0.6,
+	N_RUNS = 500,
+	VAR_LIST = TypeWOE Prim_or_XsWOE locationWOE Broker_Parent_NameNwBucketWOE Numofloc_bucketWOE Premium_bucketWOE AnnuBurnRate_bucketWOE Lossper_bucketNewWOE,
+	DEP_VAR = Quote,
+	SIGS_LEVEL = 0.05,
+	OUT_FILE1 = sub.Bootstrap_outfile1,
+	OUT_FILE2 = sub.Bootstrap_outfile2,
+	N_PCTS = 95,
+	MOD_TYPE = LOGISTIC,
+	SELECT_TYPE = forward
+	);
+/*export bootstrap related variables */
+
+proc export data=sub.Bootstrap_outfile1 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\Bootstrap_outfile1.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=sub.Bootstrap_outfile2 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\Bootstrap_outfile2.csv'
+   dbms=csv
+   replace;
+run;
+/*roc*/
+PROC LOGISTIC
+INMODEL = mod.QuoteModel_;
+SCORE DATA = mod.testing OUT = mod.Scored_testcheck FITSTAT
+OUTROC = mod.ROC_test;
+RUN;
+proc export data=mod.ROC_test 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\ROC_test.csv'
+   dbms=csv
+   replace;
+run;
+
+/************************************************* Swarnava Request ***************************************************/
+data sub._24octsubmissiodata1;
+set sub._24octsubmissiodata;
+length losshist_indi $30.;
+if Loss_Period = . then losshist_indi = "NO";
+else losshist_indi ="YES";
+run;
+data sub._25octsubmissiodata;
+set sub._24octsubmissiodata1;
+Length Lossper_bucketNew $32.;
+if Loss_Period &gt;=1 and Loss_Period &lt;=4 then Lossper_bucketNew = "Bucket1";
+else if Loss_Period =5 then Lossper_bucketNew = "Bucket2";
+else if Loss_Period =6 then Lossper_bucketNew = "Bucket3";
+else if Loss_Period =7 then Lossper_bucketNew = "Bucket4";
+else if Loss_Period &gt;=8 and Loss_Period &lt;=9 then Lossper_bucketNew = "Bucket5";
+else if Loss_Period =10 then Lossper_bucketNew = "Bucket6";
+else if Loss_Period &gt;=11 and Loss_Period &lt;=12 then Lossper_bucketNew = "Bucket7";
+else if Loss_Period &gt;=13 and Loss_Period &lt;=15 then Lossper_bucketNew = "Bucket8";
+else if Loss_Period &gt;=16 and Loss_Period &lt;=31 then Lossper_bucketNew = "Bucket9";
+else Lossper_bucketNew = "Bucket_Missing";
+run;
+/* Running Bivariates */
+%macro bivariate_cat(data,vari);
+proc means data  = mod1.&amp;data noprint missing nway;
+class &amp;vari;
+var Quote;
+output out = mod1.bivar_&amp;data (drop  = _TYPE_ _FREQ_)
+n= n
+nmiss = nmiss
+mean(Quote) = event_mean
+sum(Quote) = event_count
+run;
+data mod1.bivar_&amp;data;
+set mod1.bivar_&amp;data;
+length variable $50.;
+format variable $50.;
+informat variable $50.;
+if n ne 0 then non_event_count = n - event_count;
+else non_event_count = nmiss-event_count;
+per_event = event_count/12;
+per_nonevent = non_event_count/18;
+bivar_&amp;data.WOE = log(per_event/per_nonevent);
+W_WOE = (per_event-per_nonevent)*(bivar_&amp;data.WOE);
+variable = "&amp;data";
+run;
+%mend bivariate_cat;
+/*%bivariate_cat(ModelData1,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData2,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData3,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData4,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData5,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData6,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData7,AnnuBurnRate_bucket);*/
+/*%bivariate_cat(ModelData8,AnnuBurnRate_bucket);*/
+%bivariate_cat(ModelData9,AnnuBurnRate_bucket);
+/**Export**/
+	OPTIONS NOMPRINT NOMLOGIC;
+	%macro exportdata(a=);
+	PROC EXPORT 
+		    DATA = mod1.&amp;a 
+	 	    OUTFILE="O:\YRC070\Users\Sudipta96408\Liberty\Export\stats\&amp;a..csv"
+			DBMS=csv
+		    REPLACE;
+	run;
+	%mend exportdata;
+%exportdata(a=Bivar_modeldata1);
+%exportdata(a=Bivar_modeldata2);
+%exportdata(a=Bivar_modeldata3);
+%exportdata(a=Bivar_modeldata4);
+%exportdata(a=Bivar_modeldata5);
+%exportdata(a=Bivar_modeldata6);
+%exportdata(a=Bivar_modeldata7);
+%exportdata(a=Bivar_modeldata8);
+%exportdata(a=Bivar_modeldata9);
+
+data mod1.Temp;
+set sub._24octsubmissiodata1;
+n=ranuni(8);
+run;
+proc sort data= mod1.Temp;
+by n;
+run;
+data mod1.training mod1.testing;
+set mod1.Temp nobs=nobs;
+if _n_&lt;=.6*nobs then output mod1.training;
+else output mod1.testing;
+run;
+/*Running proc logistics on the training data*/
+/* Old_Occupancy Class_Code_Desc Class_Code_Desc_NEW Broker_Comp Broker_Parent_Name3 location CAT_Modeling Prim_Occupancy Type*/
+PROC LOGISTIC
+DATA = mod1.training NAMELEN = 32 DESCENDING
+OUTEST = mod1.OutEst_ OUTMODEL = mod1.QuoteModel;
+CLASS Type Prim_or_Xs Broker_Parent_NameNwBucket location losshist_indi;
+/*CLASS location;*/
+MODEL Quote =
+Prim_or_Xs
+Broker_Parent_NameNwBucket 
+Type
+Numofloc_bucketWOE
+Premium_bucketWOE
+/*AnnuBurnRate_bucketWOE*/
+location
+losshist_indi
+/SELECTION = FORWARD/*losshist_indi*/
+SLE = 0.05
+SLS = 0.05
+LACKFIT
+RSQUARE
+STB
+CLPARM = WALD
+PARMLABEL
+/*requests detailed results at each step*/
+/*DETAILS*/
+/*specifies whether and how hierarchy is maintained and whether a single effect or multiple effects are allowed to enter or leave the model per step*/
+/*HIERARCHY = */
+/*displays influence statistics*/
+/*INFLUENCE */
+CTABLE;
+/*OUTROC = trainROC;*/
+OUTPUT OUT = mod1.Log_Reg P = p_1;
+/*score data = EDD.testing out = testpredictions outroc = testroc;*/
+ODS OUTPUT PARAMETERESTIMATES = mod1.Para_Est;
+ODS OUTPUT ASSOCIATION = mod1.Association;
+ODS OUTPUT FitStatistics = mod1.FitStatis;
+/*ODS OUTPUT RSquare = result.RSquare;*/
+ODS OUTPUT LackFitChiSq = mod1.LackFitChiSq;
+ODS OUTPUT Classification = mod1.Classification;
+ODS OUTPUT ModelBuildingSummary = mod1.ModelBuildingSummary;
+RUN;
+
+/* MODEL run on testing dataset */
+PROC LOGISTIC
+INEST = mod1.Outest_ INMODEL = mod1.QuoteModel;
+SCORE DATA = mod1.testing OUT = mod1.Scored_test FITSTAT
+OUTROC = mod1.ROC_test;
+RUN;
+PROC LOGISTIC DATA = mod1.Scored_test DESCENDING ;
+MODEL Quote = ;
+ROC PRED = P_1 ;
+ROCCONTRAST ;
+ods output ROCAssociation = mod1.ROCAssociation;
+ODS OUTPUT PARAMETERESTIMATES = mod1.Para_Est;
+RUN ;
+/****** Output datasets ******/ 
+proc export data=mod1.Association 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\stats\Association.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod1.Para_Est 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\stats\Para_est.csv'
+   dbms=csv
+   replace;
+run;
+proc export data=mod1.ModelBuildingSummary 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\stats\Modelbuildingsummary.csv'
+   dbms=csv
+   replace;
+run;
+/*roc*/
+PROC LOGISTIC
+INMODEL = mod1.QuoteModel;
+SCORE DATA = mod1.testing OUT = mod1.Scored_test FITSTAT
+OUTROC = mod1.ROC_test;
+RUN;
+proc export data=mod1.ROC_test 
+outfile='O:\YRC070\Users\Sudipta96408\Liberty\Export\modelstats\ROC_test.csv'
+   dbms=csv
+   replace;
+run;
+
+/*VIF for testing*/
+PROC REG
+DATA = sub._24octsubmissiodata1;
+MODEL Quote =
+/*Prim_or_Xs*/
+/*Broker_Parent_NameNwBucket */
+/*Type*/
+Numofloc_bucketWOE
+Premium_bucketWOE
+AnnuBurnRate_bucketWOE
+/*location*/
+/*losshist_indi*/
+/ VIF;
+ODS OUTPUT 
+PARAMETERESTIMATES = sub.VIF;
+QUIT;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE></BODY></HTML>
