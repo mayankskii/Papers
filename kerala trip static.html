@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Romantic Kerala & Tamil Nadu Expedition - Detailed Itinerary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-dark: #064e3b;
+            --primary: #047857;
+            --primary-light: #d1fae5;
+            --accent: #d97706;
+            --accent-light: #fef3c7;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --alert-bg: #fef2f2;
+            --alert-border: #f87171;
+            --alert-text: #991b1b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header Header */
+        .header-card {
+            background: linear-gradient(135deg, #064e3b 0%, #047857 60%, #0f766e 100%);
+            color: white;
+            padding: 35px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(4, 120, 87, 0.2);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .header-card p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .meta-chip {
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        /* Train Status Card */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background-color: var(--alert-bg);
+            border: 1px solid var(--alert-border);
+            color: var(--alert-text);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-banner strong {
+            font-weight: 700;
+        }
+
+        /* Table Styling */
+        .styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 10px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .styled-table th {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            font-weight: 700;
+            text-align: left;
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .styled-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+            font-size: 0.93rem;
+        }
+
+        .styled-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .styled-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        /* Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .status-cnf {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-wl {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .waypoint-tag {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+
+        .food-tag {
+            display: inline-block;
+            background: var(--accent-light);
+            color: #92400e;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 6px;
+            margin: 3px 2px;
+            border: 1px solid #fde68a;
+        }
+
+        .activity-list,
+        .food-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .activity-list li,
+        .food-list li {
+            margin-bottom: 6px;
+        }
+
+        /* Map Container */
+        #map-wrapper {
+            position: relative;
+        }
+
+        #map {
+            height: 520px;
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            z-index: 1;
+        }
+
+        .map-legend {
+            background: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        /* Custom Leaflet Marker Styling */
+        .custom-map-marker {
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: 700;
+            font-size: 11px;
+            line-height: 20px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-map-marker.start-end {
+            background-color: #dc2626;
+        }
+
+        .custom-map-marker.hub {
+            background-color: #2563eb;
+        }
+
+        /* Connectivity & Travel Tips Grid */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tip-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .tip-card h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                color: black;
+            }
+
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+
+            .header-card {
+                background: #047857 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            #map {
+                height: 400px;
+                page-break-inside: avoid;
+            }
+
+            .styled-table {
+                page-break-inside: auto;
+            }
+
+            .styled-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            .alert-banner {
+                border: 1px solid #dc2626;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Header Header -->
+        <div class="header-card">
+            <h1>Kerala & Tamil Nadu Coastal Expedition</h1>
+            <p>Comprehensive 8-Day Optimized Romantic Itinerary for Mayank & Mediya</p>
+            <div class="header-meta">
+                <span class="meta-chip">🗓 Oct 21 – Oct 28</span>
+                <span class="meta-chip">🚆 Train + 🛵 Rental Scooters</span>
+                <span class="meta-chip">📍 23 Route Waypoints</span>
+                <span class="meta-chip">🌴 Beaches, Backwaters, Bouldering & Tea Hills</span>
+            </div>
+        </div>
+
+        <!-- Booking & Ticket Alert -->
+        <div class="alert-banner">
+            <div style="font-size: 1.3rem;">⚠️</div>
+            <div>
+                <strong>Urgent Logistics Action Required (Train #2):</strong> Your Train 16382 ticket from Nagercoil to Varkala (23 Oct) is currently Waitlisted (RQWL 14 & 15)[cite: 2]. Roadside Quotas clear very rarely. <strong>Backup Plan:</strong> Take a local KSRTC Express Bus (runs every 30 mins from Nagercoil Bus Stand to Varkala/Trivandrum) or purchase an unreserved passenger train ticket directly at Nagercoil Station on Oct 23 morning.
+            </div>
+        </div>
+
+        <!-- Train Summary Section -->
+        <div class="section-card">
+            <h2>🚆 Train Booking & Schedule Summary</h2>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Train Details</th>
+                        <th>Route & Timings</th>
+                        <th>Class</th>
+                        <th>PNR & Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>21 Oct</strong></td>
+                        <td>17235 / SMVT Bengaluru - Nagercoil Express[cite: 3]</td>
+                        <td>SMVT Bengaluru (17:15) → Nagercoil Jn (07:20, 22 Oct)[cite: 3]</td>
+                        <td>AC 2-Tier (2A)[cite: 3]</td>
+                        <td><code>4656898944</code><br><span class="status-badge status-cnf">Confirmed</span> (A2: 38, 40)[cite: 3]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>23 Oct</strong></td>
+                        <td>16382 / Kanyakumari - Pune Express[cite: 2]</td>
+                        <td>Nagercoil Jn (09:05) → Varkala Sivagiri (11:22)[cite: 2]</td>
+                        <td>Sleeper (SL)[cite: 2]</td>
+                        <td><code>4764196403</code><br><span class="status-badge status-wl">Waitlist (RQWL 14/15)</span>[cite: 2]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>25 Oct</strong></td>
+                        <td>16382 / Kanyakumari - Pune Express[cite: 4]</td>
+                        <td>Varkala Sivagiri (11:23) → Ernakulam Town (15:05)[cite: 4]</td>
+                        <td>Sleeper (SL)[cite: 4]</td>
+                        <td><code>4864196491</code><br><span class="status-badge status-cnf">Confirmed</span> (S2: 41, 44)[cite: 4]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>28 Oct</strong></td>
+                        <td>12683 / Ernakulam - SMVT Bengaluru SF[cite: 1]</td>
+                        <td>Ernakulam Jn (16:50) → Krishnarajapuram (02:54, 29 Oct)[cite: 1]</td>
+                        <td>AC 2-Tier (2A)[cite: 1]</td>
+                        <td><code>4144227185</code><br><span class="status-badge status-cnf">Confirmed</span> (A1: 2, 5)[cite: 1]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Interactive Map Section -->
+        <div class="section-card" id="map-wrapper">
+            <h2>🗺 Interactive Complete Route Map (All 23 Waypoints)</h2>
+            <p style="font-size: 0.92rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">
+                Click on any numbered pin to see location details and sequence step. The line traces your exact itinerary from Bengaluru down to Kanyakumari, up through the Kerala coastline, and into the Western Ghats.
+            </p>
+            <div id="map"></div>
+            <div class="map-legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #dc2626;"></div>
+                    <span>Start / End Point (Bengaluru)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #047857;"></div>
+                    <span>Key Sightseeing Waypoints (1 to 23)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #2563eb;"></div>
+                    <span>Major Transit Hubs (Nagercoil / Varkala / Kochi)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Master Master Schedule Table -->
+        <div class="section-card">
+            <h2>📅 Day-by-Day Master Itinerary & Culinary Guide</h2>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Date / Day</th>
+                        <th style="width: 22%;">Locations & Route Waypoints</th>
+                        <th style="width: 32%;">Things to Do & Sightseeing</th>
+                        <th style="width: 24%;">Local Culinary Highlights</th>
+                        <th style="width: 12%;">Logistics</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <!-- Day 1 -->
+                    <tr>
+                        <td><strong>21 Oct</strong><br><small>Wed</small></td>
+                        <td>
+                            <span class="waypoint-tag">#1</span> PURA Ladies PG (Indiranagar)<br>
+                            <span class="waypoint-tag">#2</span> SMVT Railway Station
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li>Finalize packing, double check ID proofs for train travel[cite: 1].</li>
+                                <li>Commute early from Indiranagar to SMVT Station to navigate Bengaluru traffic.</li>
+                                <li>Board overnight express to Tamil Nadu at 17:15[cite: 3].</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Station Snacks</span>
+                            <span class="food-tag">Pack Dinner from Indiranagar</span>
+                            <p style="font-size:0.85rem; margin-top:4px; color:var(--text-muted);">Order IRCTC e-catering to seat if needed[cite: 3].</p>
+                        </td>
+                        <td>Train 17235<br>(14h 05m overnight)[cite: 3]</td>
+                    </tr>
+
+                    <!-- Day 2 -->
+                    <tr>
+                        <td><strong>22 Oct</strong><br><small>Thu</small></td>
+                        <td>
+                            <span class="waypoint-tag">#3</span> Nagercoil Station<br>
+                            <span class="waypoint-tag">#4</span> Padmanabhapuram Palace<br>
+                            <span class="waypoint-tag">#5</span> Mukkadal Science Park<br>
+                            <span class="waypoint-tag">#6</span> Canal View Point (Tovala)<br>
+                            <span class="waypoint-tag">#7</span> Vattakottai Fort<br>
+                            <span class="waypoint-tag">#8</span> Indira Point (Rock)<br>
+                            <span class="waypoint-tag">#9</span> Sunset Point Kanyakumari<br>
+                            <span class="waypoint-tag">#10</span> Nagercoil City
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>07:20:</strong> Pick up rental scooter in Nagercoil.</li>
+                                <li>Explore 16th-century wooden architecture at Padmanabhapuram Palace (~1.5 hrs).</li>
+                                <li>Ride past Mukkadal Dam / Science Park & lush green canal vistas at Tovala.</li>
+                                <li>Walk along the coastal stone ramparts of Vattakottai Fort overlooking the sea.</li>
+                                <li>Catch sunset views at Kanyakumari's Sunset Point & Indira Point memorial area.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Nagercoil Parotta & Salna</span>
+                            <span class="food-tag">Kanyakumari Fish Curry</span>
+                            <span class="food-tag">Fresh Banana Chips</span>
+                            <span class="food-tag">Nongu (Ice Apple)</span>
+                            <span class="food-tag">Tender Coconut</span>
+                        </td>
+                        <td>Rental Scooter<br>(~85 km total riding)</td>
+                    </tr>
+
+                    <!-- Day 3 -->
+                    <tr>
+                        <td><strong>23 Oct</strong><br><small>Fri</small></td>
+                        <td>
+                            <span class="waypoint-tag">#11</span> Varkala Cliff & Town<br>
+                            <span class="waypoint-tag">#12</span> Munroe Island<br>
+                            <span class="waypoint-tag">#13</span> Varkala Beach (Papanasam)
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>Morning:</strong> Transit from Nagercoil to Varkala[cite: 2] (by train/bus).</li>
+                                <li>Check into Varkala cliff resort and pick up Varkala scooter.</li>
+                                <li><strong>Afternoon:</strong> Scenic ride to Munroe Island for a private 2-hour country boat canoe cruise through narrow mangrove canals.</li>
+                                <li><strong>Sunset:</strong> Return to Varkala for a sunset stroll along Papanasam Beach & North Cliff top.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Varkala Fresh Seafood Grill</span>
+                            <span class="food-tag">Toddy Shop Duck Roast (Munroe)</span>
+                            <span class="food-tag">Avocado Smoothies</span>
+                            <span class="food-tag">Kerala Sadya</span>
+                        </td>
+                        <td>Train / Bus + Varkala Scooter<br>(~60 km riding)</td>
+                    </tr>
+
+                    <!-- Day 4 -->
+                    <tr>
+                        <td><strong>24 Oct</strong><br><small>Sat</small></td>
+                        <td>
+                            <span class="waypoint-tag">#14</span> Jatayu Earth's Center<br>
+                            <span class="waypoint-tag">#15</span> Ponmudi Hill Station<br>
+                            <span class="waypoint-tag">#16</span> Varkala (Return Waypoint)
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>Morning:</strong> Ride to Jatayu Earth's Center; ride the cable car up to the world's largest bird sculpture (~2.5 hrs).</li>
+                                <li><strong>Afternoon:</strong> Thrilling ride through 22 hairpin bends up to Ponmudi Hill Station. Enjoy mountain fog, winding tea trails, and stream views.</li>
+                                <li><strong>Evening:</strong> Cruise back down the hills to Varkala cliff for live acoustic music cafes.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Hot Tea & Mutta Baji (Ponmudi)</span>
+                            <span class="food-tag">Pazham Pori (Banana Fritters)</span>
+                            <span class="food-tag">Wood-fired Pizza at Darjeeling Cafe</span>
+                        </td>
+                        <td>Scooter Day Trip<br>(~140 km round hill ride)</td>
+                    </tr>
+
+                    <!-- Day 5 -->
+                    <tr>
+                        <td><strong>25 Oct</strong><br><small>Sun</small></td>
+                        <td>
+                            <span class="waypoint-tag">#17</span> Kochi (Fort Kochi / Rock Gym)
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>11:23 - 15:05:</strong> Train ride from Varkala to Ernakulam Town[cite: 4].</li>
+                                <li>Rent scooter/bike in Kochi (suitable for mountain trip tomorrow).</li>
+                                <li><strong>Late Afternoon:</strong> Indoor rock climbing / bouldering session at a indoor climbing gym in Kochi.</li>
+                                <li><strong>Evening:</strong> Explore Fort Kochi heritage streets, Jewish Synagogue exterior, Chinese Fishing Nets, and sea-breeze beach walk.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Karimeen Pollichathu (Pearl Spot)</span>
+                            <span class="food-tag">Fort Kochi Iced Coffee (Kashi Art Cafe)</span>
+                            <span class="food-tag">Syrian Catholic Beef Fry</span>
+                        </td>
+                        <td>Train 16382[cite: 4] + Local Kochi Scooter</td>
+                    </tr>
+
+                    <!-- Day 6 -->
+                    <tr>
+                        <td><strong>26 Oct</strong><br><small>Mon</small></td>
+                        <td>
+                            <span class="waypoint-tag">#18</span> Munnar Hill Station<br>
+                            <span class="waypoint-tag">#19</span> Mattupetty Dam
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>07:00 AM:</strong> Start early scooter ride from Kochi to Munnar (~125 km ascent).</li>
+                                <li>En route stops at Cheeyappara Waterfalls and gap road viewpoints.</li>
+                                <li>Visit Mattupetty Dam for tranquil lake views, speedboating, and surrounding tea gardens.</li>
+                                <li>Overnight stay in foggy Munnar hills.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Fresh Cardamom Tea</span>
+                            <span class="food-tag">Hot Kerala Appam & Stew</span>
+                            <span class="food-tag">Homemade Chocolates</span>
+                            <span class="food-tag">Hillside Omelettes</span>
+                        </td>
+                        <td>Mountain Scooter Ride<br>(~135 km, ~4.5 hrs ride)</td>
+                    </tr>
+
+                    <!-- Day 7 -->
+                    <tr>
+                        <td><strong>27 Oct</strong><br><small>Tue</small></td>
+                        <td>
+                            <span class="waypoint-tag">#20</span> Pine Valley, Vagamon<br>
+                            <span class="waypoint-tag">#21</span> Kochi City (Return)
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>Morning:</strong> Ride high-range mountain roads from Munnar toward Vagamon (~90 km).</li>
+                                <li>Walk through the iconic, cinematic Pine Valley Forest and rolling green meadows of Vagamon.</li>
+                                <li><strong>Afternoon:</strong> Descend back to Kochi city via Pala/Thodupuzha route.</li>
+                                <li>Relaxed evening in Kochi; check into stay.</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Tapioca (Kappa) & Fish Curry</span>
+                            <span class="food-tag">Kottayam Style Pork/Beef Roast</span>
+                            <span class="food-tag">Cool Tender Coconut Shake</span>
+                        </td>
+                        <td>Scenic Mountain Return<br>(~175 km full day ride)</td>
+                    </tr>
+
+                    <!-- Day 8 -->
+                    <tr>
+                        <td><strong>28 Oct</strong><br><small>Wed</small></td>
+                        <td>
+                            <span class="waypoint-tag">#22</span> Krishnarajapuram (KJM)<br>
+                            <span class="waypoint-tag">#23</span> PURA Ladies PG (End)
+                        </td>
+                        <td>
+                            <ul class="activity-list">
+                                <li><strong>Morning (Optional):</strong> Quick morning drive to Alleppey Beach or backwater fringe if time allows before 12:00 PM.</li>
+                                <li>Return rental bike/scooter in Kochi and pick up luggage.</li>
+                                <li>Souvenir and spice shopping at Mattancherry.</li>
+                                <li><strong>16:50:</strong> Board return SF Express train from Ernakulam Jn (ERS) back to Bengaluru[cite: 1].</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <span class="food-tag">Dhe Puttu (Varieties of Puttu)</span>
+                            <span class="food-tag">Malabar Biryani</span>
+                            <span class="food-tag">Banana Chips to take home</span>
+                        </td>
+                        <td>Train 12683<br>(Dep ERS 16:50, Arr KJM 02:54)[cite: 1]</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Connectivity, Mobile Data & Local Travel Tips -->
+        <div class="section-card">
+            <h2>📶 Connectivity, Mobile Coverage & Essential Tips</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h3>📱 Mobile Network Coverage</h3>
+                    <ul style="padding-left:18px; margin:0;">
+                        <li><strong>Jio & Airtel:</strong> Excellent 4G/5G coverage in Nagercoil, Kanyakumari, Varkala, Kochi, and main town areas.</li>
+                        <li><strong>Munnar & Ponmudi Ghats:</strong> Signals drop severely along hairpin bends and deep forest valleys. <strong>BSNL</strong> has the best emergency connectivity in rural hills.</li>
+                    </ul>
+                </div>
+
+                <div class="tip-card">
+                    <h3>🗺 Offline Maps & Navigation</h3>
+                    <ul style="padding-left:18px; margin:0;">
+                        <li>Download offline Google Maps for <em>"Kanyakumari-Trivandrum"</em> and <em>"Kochi-Munnar-Vagamon"</em> areas before leaving Bengaluru.</li>
+                        <li>Mountain navigation can be tricky after 6 PM due to thick fog in Munnar and Vagamon. Avoid night riding on ghats.</li>
+                    </ul>
+                </div>
+
+                <div class="tip-card">
+                    <h3>🛵 Riding & Packing Essentials</h3>
+                    <ul style="padding-left:18px; margin:0;">
+                        <li>Carry lightweight rain gear / ponchos (october can bring unexpected post-monsoon showers in Western Ghats).</li>
+                        <li>Ensure rental scooters have clear headlights, functional mirrors, and valid registration/insurance papers.</li>
+                        <li>Always wear helmets—Kerala Traffic Police strictly enforce helmet rules on state highways.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Leaflet JavaScript Logic -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Complete 23 Places Array as provided
+        var places = [{
+                name: "1. PURA Ladies PG (Start)",
+                coords: [12.9770, 77.6385],
+                details: "Bengaluru, Karnataka",
+                type: "start"
+            },
+            {
+                name: "2. SMVT Railway Station Parking",
+                coords: [12.9981, 77.6415],
+                details: "Bengaluru Train Boarding",
+                type: "hub"
+            },
+            {
+                name: "3. Nagercoil Railway Station",
+                coords: [8.1744, 77.4438],
+                details: "Tamil Nadu Connection",
+                type: "hub"
+            },
+            {
+                name: "4. Padmanabhapuram Palace",
+                coords: [8.2507, 77.3265],
+                details: "Historic Wooden Palace",
+                type: "spot"
+            },
+            {
+                name: "5. Mukkadal Science Park",
+                coords: [8.2812, 77.4142],
+                details: "Chiramadam, Tamil Nadu",
+                type: "spot"
+            },
+            {
+                name: "6. Canal View Point",
+                coords: [8.2500, 77.4815],
+                details: "Tovala, Tamil Nadu",
+                type: "spot"
+            },
+            {
+                name: "7. Vattakottai Fort",
+                coords: [8.1258, 77.5648],
+                details: "Coastal Fort, Tamil Nadu",
+                type: "spot"
+            },
+            {
+                name: "8. Indira Point (Kanyakumari Rock)",
+                coords: [8.0777, 77.5504],
+                details: "Southernmost Tip View",
+                type: "spot"
+            },
+            {
+                name: "9. Sunset Point",
+                coords: [8.0786, 77.5317],
+                details: "Kanyakumari, Tamil Nadu",
+                type: "spot"
+            },
+            {
+                name: "10. Nagercoil City",
+                coords: [8.1839, 77.4118],
+                details: "Tamil Nadu Hub",
+                type: "hub"
+            },
+            {
+                name: "11. Varkala Cliff & Town",
+                coords: [8.7379, 76.7163],
+                details: "Thiruvananthapuram, Kerala",
+                type: "hub"
+            },
+            {
+                name: "12. Munroe Island",
+                coords: [8.9952, 76.6105],
+                details: "Backwater Village, Kerala",
+                type: "spot"
+            },
+            {
+                name: "13. Varkala Beach",
+                coords: [8.7356, 76.7032],
+                details: "Papanasam Beach, Kerala",
+                type: "spot"
+            },
+            {
+                name: "14. Jatayu Earth's Center",
+                coords: [8.8610, 76.8664],
+                details: "World's Largest Bird Sculpture",
+                type: "spot"
+            },
+            {
+                name: "15. Ponmudi Hill Station",
+                coords: [8.7599, 77.1169],
+                details: "Western Ghats Peaks",
+                type: "spot"
+            },
+            {
+                name: "16. Varkala (Return Waypoint)",
+                coords: [8.7379, 76.7163],
+                details: "Coastal Route Pivot",
+                type: "spot"
+            },
+            {
+                name: "17. Kochi (Fort Kochi / Rock Gym)",
+                coords: [9.9312, 76.2673],
+                details: "Historic Port Town, Kerala",
+                type: "hub"
+            },
+            {
+                name: "18. Munnar Hill Station",
+                coords: [10.0889, 77.0595],
+                details: "Tea Plantations, Kerala",
+                type: "spot"
+            },
+            {
+                name: "19. Mattupetty Dam",
+                coords: [10.1070, 77.1231],
+                details: "Munnar Lake Ecosystem",
+                type: "spot"
+            },
+            {
+                name: "20. Pine Valley, Vagamon",
+                coords: [9.6551, 76.9290],
+                details: "Pine Forests & Meadows",
+                type: "spot"
+            },
+            {
+                name: "21. Kochi City (Return)",
+                coords: [9.9312, 76.2673],
+                details: "Transit Hub, Kerala",
+                type: "hub"
+            },
+            {
+                name: "22. Krishnarajapuram (KJM)",
+                coords: [13.0170, 77.7044],
+                details: "Bengaluru Entry",
+                type: "hub"
+            },
+            {
+                name: "23. PURA Ladies PG (End)",
+                coords: [12.9770, 77.6385],
+                details: "Journey Complete",
+                type: "start"
+            }
+        ];
+
+        // Initialize Map
+        var map = L.map('map', {
+            scrollWheelZoom: false
+        }).setView([9.5, 76.8], 7);
+
+        // CartoDB Voyager Tile Layer for clean, elegant styling
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        var latlngs = [];
+
+        // Loop through all 23 places
+        places.forEach(function(place, index) {
+            latlngs.push(place.coords);
+
+            var markerClass = 'custom-map-marker';
+            if (place.type === 'start') markerClass += ' start-end';
+            if (place.type === 'hub') markerClass += ' hub';
+
+            // Custom DivIcon with index badge number
+            var customIcon = L.divIcon({
+                className: markerClass,
+                html: (index + 1).toString(),
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            // Create marker with detailed popup
+            L.marker(place.coords, {
+                    icon: customIcon
+                }).addTo(map)
+                .bindPopup(
+                    "<div style='font-family:sans-serif; font-size:13px; padding:2px;'>" +
+                    "<strong style='color:#047857; font-size:14px;'>" + place.name + "</strong><br>" +
+                    "<span style='color:#64748b;'>" + place.details + "</span><br>" +
+                    "<small style='color:#0284c7;'>Lat: " + place.coords[0] + ", Lng: " + place.coords[1] + "</small>" +
+                    "</div>"
+                );
+        });
+
+        // Polyline tracing all 23 coordinates
+        var polyline = L.polyline(latlngs, {
+            color: '#047857',
+            weight: 3.5,
+            opacity: 0.85,
+            dashArray: '6, 8',
+            lineCap: 'round'
+        }).addTo(map);
+
+        // Fit view bounds smoothly
+        map.fitBounds(polyline.getBounds(), {
+            padding: [40, 40]
+        });
+    </script>
+
+</body>
+
+</html>
